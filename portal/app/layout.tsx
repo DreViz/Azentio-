@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { Poppins } from "next/font/google";
 import Header from "@/components/Header";
@@ -8,8 +8,25 @@ import "./globals.css";
 const poppins = Poppins({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"], variable: "--font-poppins", display: "swap" });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3100"),
   title: "azentio.ai | Build intelligence. Create shared value.",
   description: "Applied AI for financial services, a secure client and employee portal, and governed collective learning.",
+  openGraph: {
+    siteName: "azentio.ai",
+    type: "website",
+    locale: "en",
+    title: "azentio.ai | Build intelligence. Create shared value.",
+    description: "Applied AI for financial services, a secure client and employee portal, and governed collective learning.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "azentio.ai | Build intelligence. Create shared value.",
+    description: "Applied AI for financial services, a secure client and employee portal, and governed collective learning.",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#16303d",
 };
 
 const FOOTER: [string, [string, string][]][] = [
