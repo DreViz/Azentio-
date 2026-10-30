@@ -1,21 +1,62 @@
 @import "tailwindcss";
 
+/* Brand tokens taken from azentio.com: Poppins, ink #16303D, mint #55FFBE, green #2ED88E, mint tint #E6FFF5. */
 @theme {
-  --color-ink: #0b1b3f;
-  --color-brand: #3b5bfd;
-  --color-brand-2: #06b6d4;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink: #16303d;
+  --color-ink-2: #22404f;
+  --color-mint: #55ffbe;
+  --color-green: #2ed88e;
+  --color-green-deep: #0e7a52; /* green text that passes 4.5:1 on white */
+  --color-tint: #e6fff5;
+  --color-cloud: #f8f9fa;
+  --color-fog: #efefef;
+  --color-muted: #5b6770;
+
+  /* Legacy names used across pages, mapped onto the brand. */
+  --color-brand: #16303d;
+  --color-brand-2: #55ffbe;
+
+  /* Tailwind's indigo and violet scales become brand tints, so no page shows off-brand purple. */
+  --color-indigo-50: #e6fff5;
+  --color-indigo-100: #ccfbe9;
+  --color-indigo-200: #9cf2d0;
+  --color-indigo-300: #55ffbe;
+  --color-indigo-500: #22404f;
+  --color-indigo-600: #16303d;
+  --color-indigo-700: #16303d;
+  --color-indigo-900: #16303d;
+  --color-violet-50: #eef2f4;
+  --color-violet-700: #16303d;
 }
 
-body { background: #f6f7fb; color: #0f172a; }
-.btn { @apply inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:opacity-50; }
-.btn-ghost { @apply inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50; }
-.btn-danger { @apply inline-flex items-center gap-2 rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-700; }
-.card { @apply rounded-2xl border border-slate-200 bg-white p-5 shadow-sm; }
-.input { @apply mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-indigo-200; }
-.label { @apply block text-sm font-medium text-slate-700; }
-.h1 { @apply text-3xl font-bold tracking-tight text-ink; }
+html { scroll-behavior: smooth; }
+body { background: #ffffff; color: var(--color-ink); }
+::selection { background: var(--color-mint); color: var(--color-ink); }
+
+/* Component classes live in the components layer so utilities (hidden, sm:inline-flex, w-full) can override them. */
+@layer components {
+/* Pill buttons as on azentio.com: mint primary, ink secondary. */
+.btn { @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-mint px-6 py-2.5 text-[15px] font-medium text-ink transition-colors duration-200 hover:bg-green focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:cursor-not-allowed disabled:opacity-45; }
+.btn-dark { @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-ink px-6 py-2.5 text-[15px] font-medium text-white transition-colors duration-200 hover:bg-ink-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:opacity-45; }
+.btn-ghost { @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-ink/25 bg-white px-5 py-2 text-[15px] font-medium text-ink transition-colors duration-200 hover:border-ink hover:bg-cloud focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:opacity-45; }
+.btn-danger { @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-[#c8102e] px-6 py-2.5 text-[15px] font-medium text-white transition-colors duration-200 hover:bg-[#a50d26] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:opacity-45; }
+
+.card { @apply rounded-lg border border-black/[0.06] bg-white p-6 shadow-[0_2px_10px_rgba(22,48,61,0.06)]; }
+.panel { @apply rounded-lg bg-cloud p-6; }
+.input { @apply mt-1.5 block w-full rounded-md border border-ink/20 bg-white px-3.5 py-2.5 text-[15px] text-ink placeholder:text-muted/70 focus:border-ink focus:outline-none focus:ring-2 focus:ring-mint/60; }
+.label { @apply block text-sm font-medium text-ink; }
+.h1 { @apply text-[2rem] font-semibold leading-tight tracking-[-0.01em] text-ink md:text-[2.6rem]; }
 .h2 { @apply text-xl font-semibold text-ink; }
-.muted { @apply text-sm text-slate-500; }
-.link { @apply font-medium text-brand hover:underline; }
-.prose-sm p { @apply mb-2; }
+.muted { @apply text-sm text-muted; }
+.link { @apply font-semibold text-ink underline decoration-mint decoration-2 underline-offset-4 transition-colors hover:decoration-green; }
+.eyebrow { @apply text-sm font-normal text-muted; }
+
+/* The azentio.com signature: a mint rule under the key phrase of a heading. */
+.underline-mint { @apply bg-[linear-gradient(var(--color-mint),var(--color-mint))] bg-[length:100%_4px] bg-bottom bg-no-repeat pb-1 [box-decoration-break:clone] [-webkit-box-decoration-break:clone]; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
