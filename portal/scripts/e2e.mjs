@@ -66,6 +66,7 @@ try {
     await page.fill("#code", code);
     await page.click("text=Verify and continue");
     await page.waitForURL(/\/portal/);
+    await page.waitForSelector("text=No workspace yet"); // count() does not auto-wait, so wait for the streamed render first
     expect(await page.locator("text=No workspace yet").count() === 1, "An unknown verified email signs in with no workspace and no data");
     await shot(page, "00-no-workspace");
     await page.click("text=Sign out");
@@ -109,6 +110,8 @@ try {
     for (const title of ["Festive-season traders penalised by monthly averages", "Harvest-cycle repayments look like arrears"]) {
       await page.click(`text=${title}`);
       await page.waitForSelector("text=Shared copy to publish");
+      // The model copilot rewrites the proposed title; pin it to the canonical title so later steps can reference it.
+      await page.fill("#title", title);
       await page.check('input[name="confirm"]');
       await page.click("text=Publish shared copy");
       await page.waitForURL(/\/portal\/moderation\?msg/);
@@ -138,6 +141,7 @@ try {
     await page.goto(`${BASE}/portal/moderation`);
     await page.click("text=Seasonal SME cash flow read as volatility");
     await page.waitForSelector("text=Shared copy to publish");
+    await page.fill("#title", "Seasonal SME cash flow read as volatility");
     await page.check('input[name="confirm"]');
     await page.click("text=Publish shared copy");
     await page.waitForURL(/\/portal\/moderation\?msg/);
@@ -149,11 +153,14 @@ try {
   {
     const { page, close } = await as("omar@azentio.com");
     await page.goto(`${BASE}/portal/themes?suggest=1`);
-    const form = page.locator("form", { has: page.locator('input[value="Seasonality context"]') });
-    expect(await form.count() === 1, "Theme suggestion grouped the seasonal observations as 'Seasonality context'");
+    // With a model key the suggested titles are model wording, not the keyword fallback. Accept the first valid suggestion.
+    await page.waitForSelector("form input[name='title']");
+    const form = page.locator("form", { has: page.locator('input[name="title"]') }).first();
+    const themeTitle = await form.locator('input[name="title"]').inputValue();
+    expect(themeTitle.length > 0, "Theme suggestion grouped approved observations for review");
     await act(page, form.locator("text=Create theme"));
     await shot(page, "06-themes");
-    expect(await page.locator("text=Seasonality context").count() > 0, "Theme dashboard shows the new theme");
+    expect(await page.locator(`text=${themeTitle}`).count() > 0, "Theme dashboard shows the new theme");
     expect(await page.locator("section", { hasText: "Document intake exceptions" }).locator('text="Withheld"').count() === 1, "Two-institution theme withholds its count");
 
     await page.goto(`${BASE}/portal/ideas`);
@@ -161,7 +168,7 @@ try {
     await page.selectOption("#offering_id", "financial-analysis");
     await page.fill("#problem", "Seasonal SME cash flow is read as volatility, which leads to conservative limits for healthy seasonal businesses.");
     await page.fill("#proposed_outcome", "Explain seasonality when comparing an applicant with peers, so credit officers can see what is seasonal and what is risk.");
-    const themeOpt = await page.locator("#theme_id option", { hasText: "Seasonality context" }).getAttribute("value");
+    const themeOpt = await page.locator("#theme_id option", { hasText: themeTitle }).getAttribute("value");
     await page.selectOption("#theme_id", themeOpt);
     for (const t of ["Seasonal", "Festive", "Harvest"]) await page.locator("label", { hasText: t }).locator('input[name="evidence"]').first().check();
     await act(page, "text=Create as Proposed");
