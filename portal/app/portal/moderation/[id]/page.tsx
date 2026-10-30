@@ -42,7 +42,7 @@ export default async function Review({ params, searchParams }: { params: Promise
           <h2 className="h2">Submitted text <span className="muted font-normal">(private source, never published)</span></h2>
           <p className="mt-3 whitespace-pre-line text-sm text-slate-800">{d.c.body}</p>
           <p className="muted mt-3">{d.c.industry} · {d.c.region} · {d.c.period_start} to {d.c.period_end}</p>
-          <h3 className="mt-5 font-semibold">Copilot findings <Badge tone={p.risk === "high" ? "red" : p.risk === "medium" ? "amber" : "green"}>re-identification risk: {p.risk}</Badge> <Badge tone="purple">{p.engine === "claude" ? "Rules + Claude" : "Rules engine"}</Badge></h3>
+          <h3 className="mt-5 font-semibold">Copilot findings <Badge tone={p.risk === "high" ? "red" : p.risk === "medium" ? "amber" : "green"}>re-identification risk: {p.risk}</Badge> <Badge tone="purple">{p.engine === "model" ? "Rules + model" : "Rules engine"}</Badge></h3>
           <ul className="mt-2 list-disc pl-5 text-sm">{p.reasons.map((r, i) => <li key={i}>{r}</li>)}</ul>
           {p.flags.length > 0 && (
             <table className="mt-3 w-full text-left text-xs">

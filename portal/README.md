@@ -28,7 +28,7 @@ Sign-in is a real email-code flow. With `DEMO_MODE=true`, the `/judge` page and 
 ## The judging scenario, end to end
 
 1. Three fictional institutions submit observations about seasonal SME cash flow. One contains a customer name, an account number, a city, an exact date and an amount.
-2. The moderator opens the copilot. Rules scrub direct identifiers locally. Claude, when configured, rewrites the text to reduce re-identification risk. The moderator requests clarification on one item and publishes the other two.
+2. The moderator opens the copilot. Rules scrub direct identifiers locally. The configured model rewrites the text to reduce re-identification risk. The moderator requests clarification on one item and publishes the other two.
 3. The author amends the item and resubmits it, and the moderator publishes it.
 4. The product owner accepts a suggested "Seasonality context" theme. It shows 3 distinct institutions, a confidence mix and a small-sample warning. The product owner creates an idea for Financial Analysis Intelligence and moves it to Under review.
 5. Another client sees the theme and the idea's plain status, without priority, source text or anyone's identity.
@@ -44,7 +44,7 @@ flowchart LR
   N -->|"BEGIN; SET LOCAL ROLE portal_app; app.user_id, app.org_id"| P[(Postgres<br/>row-level security<br/>SECURITY DEFINER lifecycle functions<br/>append-only audit)]
   N -->|"system path: sign-in and sessions only"| P
   N -->|"private media after policy check"| S[storage/]
-  N -->|"rule-scrubbed text, permitted passages only"| C[Claude API, optional]
+  N -->|"rule-scrubbed text, permitted passages only"| C[Model API (Anthropic-compatible), optional]
   F[fl/federated.mjs coordinator] -->|"clipped deltas only"| F
   F -->|candidate model| P
 ```
@@ -123,7 +123,7 @@ This runs the redaction self-check, reseeds, and runs 41 lifecycle tests and 21 
 ## AI disclosure
 
 - **Built with Claude Code.** The team reviewed the code, and both members can explain every part.
-- **Runtime AI is optional.** The Claude Messages API is used for AIRA answers, the moderation copilot and theme suggestions.
+- **Runtime AI is optional.** An Anthropic-compatible Messages API is used for AIRA answers, the moderation copilot and theme suggestions.
   - Models are `claude-sonnet-5` and `claude-haiku-4-5-20251001`, configurable through `AI_MODEL` and `AI_FAST_MODEL`.
   - Without a key, AIRA returns an extractive answer, the copilot runs rules only, and themes use keyword grouping. The UI labels which engine answered.
 - **Key prompts.** Each prompt sits in the file that uses it.

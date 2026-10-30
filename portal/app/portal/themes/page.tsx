@@ -26,7 +26,7 @@ export default async function Themes({ searchParams }: { searchParams: Promise<R
       <Flash sp={sp} />
       {suggestions.length > 0 && (
         <div className="mb-8 space-y-4">
-          <Notice tone="blue">Suggested groupings ({suggestions[0].engine === "claude" ? "Claude" : "keyword rules"}). Review before creating. Suggestions keep their evidence links and make no prevalence claims.</Notice>
+          <Notice tone="blue">Suggested groupings ({suggestions[0].engine === "model" ? "model suggestions" : "keyword rules"}). Review before creating. Suggestions keep their evidence links and make no prevalence claims.</Notice>
           {suggestions.map((s, i) => (
             <form key={i} action={createTheme} className="card space-y-3">
               <div className="grid gap-3 md:grid-cols-2">

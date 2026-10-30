@@ -107,11 +107,11 @@ shared copy: published ⇄ unpublished (report under review) ─▶ removed
 
 ## 7. AI components
 
-| Component | File | With a Claude key | Without a key | Data sent to the model |
+| Component | File | With a model key | Without a key | Data sent to the model |
 |---|---|---|---|---|
 | AIRA | `lib/aira.ts` | Grounded answer citing numbered passages | Extractive answer from the top passages | Only passages the user can already read, framed as data |
-| Moderation copilot | `lib/redact.ts` | Rules first, then a Claude rewrite for re-identification risk, then the rules again on the output | Rules only | Rule-scrubbed text only |
-| Theme suggestions | `lib/themes.ts` | Claude Haiku groups items with their IDs | Keyword groups with written summaries | Approved, de-identified shared items |
+| Moderation copilot | `lib/redact.ts` | Rules first, then a model rewrite for re-identification risk, then the rules again on the output | Rules only | Rule-scrubbed text only |
+| Theme suggestions | `lib/themes.ts` | The fast model groups items with their IDs | Keyword groups with written summaries | Approved, de-identified shared items |
 
 **The rules** remove emails, account numbers, phone numbers, amounts, exact dates, named businesses, people and participating institution names. They also coarsen cities to region bands and periods to a quarter, half-year or year. A self-test, including a false-positive guard, covers them.
 
@@ -176,7 +176,7 @@ shared copy: published ⇄ unpublished (report under review) ─▶ removed
 ## 12. Known limits
 
 - **Not deployed.** Deployment steps are in the README.
-- **Claude unverified.** The Claude path has not been run with a real key in this environment.
+- **Model key optional.** The model path has been verified locally with a DeepSeek key through the Anthropic-compatible endpoint (base URL and model are configurable).
 - **Email.** Sign-in emails use SMTP if configured. Notifications are in-app only, and the persisted outbox exists but has no provider-backed delivery.
 - **Not implemented** (the brief allows omitting attachments in P0):
   - attachments

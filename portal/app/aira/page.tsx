@@ -22,7 +22,7 @@ export default async function Aira({ searchParams }: { searchParams: Promise<Rec
       {res && (
         <div className="card mt-5">
           <div className="mb-3 flex items-center gap-2">
-            <Badge tone={res.engine === "claude" ? "purple" : "slate"}>{res.engine === "claude" ? "Claude, grounded" : "Extractive answer (AI not configured)"}</Badge>
+            <Badge tone={res.engine === "model" ? "purple" : "slate"}>{res.engine === "model" ? "Grounded" : res.citations.length ? "Extractive answer (sources used)" : "No matching approved evidence"}</Badge>
             <span className="muted">{res.citations.length} permitted sources · {res.ms} ms</span>
           </div>
           <p className="whitespace-pre-line text-slate-800">{res.answer}</p>

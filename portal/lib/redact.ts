@@ -1,9 +1,9 @@
-import { claude, parseJson } from "./ai";
+import { ai, parseJson } from "./ai";
 
 export type Flag = { kind: string; match: string; replacement: string };
 export type Proposal = {
   title: string; body: string; industry: string; region_band: string; period_label: string;
-  flags: Flag[]; risk: "low" | "medium" | "high"; reasons: string[]; engine: "claude" | "rules";
+  flags: Flag[]; risk: "low" | "medium" | "high"; reasons: string[]; engine: "model" | "rules";
 };
 type Source = { title: string; body: string; industry: string; region: string; period_start: string; period_end: string };
 
@@ -92,7 +92,7 @@ Return only JSON: {"title": string, "body": string, "risk": "low"|"medium"|"high
  */
 export async function proposeRedaction(src: Source, orgNames: string[]): Promise<Proposal> {
   const base = ruleProposal(src, orgNames);
-  const reply = await claude(SYSTEM, JSON.stringify({ title: base.title, body: base.body, industry: src.industry, region: base.region_band, period: base.period_label }));
+  const reply = await ai(SYSTEM, JSON.stringify({ title: base.title, body: base.body, industry: src.industry, region: base.region_band, period: base.period_label }));
   const j = parseJson<{ title: string; body: string; risk: Proposal["risk"]; reasons: string[] }>(reply);
   if (!j?.title || !j?.body) return base;
   // Re-scan the model output: the model is assistance, not the control.
@@ -100,7 +100,7 @@ export async function proposeRedaction(src: Source, orgNames: string[]): Promise
   const title = applyRules(j.title, orgNames, extra), body = applyRules(j.body, orgNames, extra);
   const order = { low: 0, medium: 1, high: 2 } as const;
   const r = order[j.risk] >= order[base.risk] ? j.risk : base.risk;
-  return { ...base, title, body, flags: [...base.flags, ...extra], risk: r ?? base.risk, reasons: [...base.reasons, ...(j.reasons ?? [])].slice(0, 6), engine: "claude" };
+  return { ...base, title, body, flags: [...base.flags, ...extra], risk: r ?? base.risk, reasons: [...base.reasons, ...(j.reasons ?? [])].slice(0, 6), engine: "model" };
 }
 
 /** Author-side scan shown on the form: flags likely sensitive content before submission. */
