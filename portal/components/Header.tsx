@@ -4,7 +4,7 @@ import { signOutAction, switchOrgAction } from "@/app/actions/auth";
 import Logo from "@/components/Logo";
 import Icon from "@/components/Icon";
 
-const PUBLIC = [["/products", "Products"], ["/solutions", "Solutions"], ["/insights", "Insights"], ["/media", "Media"], ["/aira", "AIRA"], ["/about", "About"]];
+const PUBLIC = [["/products", "Products"], ["/solutions", "Solutions"], ["/insights", "Insights"], ["/media", "Media"], ["/aira", "AIRA"], ["/trust", "Trust"], ["/about", "About"]];
 
 export default async function Header() {
   const v = await getViewer();
@@ -40,7 +40,7 @@ export default async function Header() {
           ) : (
             <>
               <Link href="/connect" className="btn-dark hidden sm:inline-flex">Contact us</Link>
-              <Link href="/login" className="btn px-4 sm:px-6">Sign in</Link>
+              <Link href="/login" className="btn-dark px-4 sm:px-6">Sign in</Link>
             </>
           )}
           <details className="relative lg:hidden">
