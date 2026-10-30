@@ -87,7 +87,7 @@ async function ClientDashboard({ sp }: { sp: Record<string, string | undefined> 
         <section className="card lg:col-span-2">
           <h2 className="h2 mb-3">Improvement ideas from shared learning</h2>
           {d.ideas.length ? d.ideas.map((i) => <div key={i.id} className="flex justify-between border-b py-2 text-sm last:border-0"><span>{i.title}</span><span className="flex items-center gap-2"><span className="muted">{fmtDate(i.updated_at)}</span><Badge tone={STATE_TONE[i.status]}>{i.status}</Badge></span></div>) : <p className="muted">No ideas to show yet.</p>}
-          <Link href="/portal/ideas" className="link mt-3 inline-block text-sm">All ideas →</Link>
+          <Link href="/portal/ideas" className="link mt-3 inline-block text-sm">All ideas</Link>
         </section>
       </div>
     </div>

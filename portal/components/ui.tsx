@@ -1,21 +1,28 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import Icon from "./Icon";
 
+// Brand-tinted status tones. Meaning is always carried by the text too, never by colour alone.
 const tones: Record<string, string> = {
-  slate: "bg-slate-100 text-slate-700", blue: "bg-indigo-50 text-indigo-700", green: "bg-emerald-50 text-emerald-700",
-  amber: "bg-amber-50 text-amber-800", red: "bg-rose-50 text-rose-700", purple: "bg-violet-50 text-violet-700", cyan: "bg-cyan-50 text-cyan-800",
+  slate: "bg-fog text-ink",
+  blue: "bg-[#e3ecf0] text-ink",
+  green: "bg-tint text-green-deep ring-1 ring-inset ring-green/40",
+  amber: "bg-[#fff4d6] text-[#7a5200]",
+  red: "bg-[#fde8eb] text-[#a50d26]",
+  purple: "bg-ink text-mint",
+  cyan: "bg-tint text-ink",
 };
 export function Badge({ children, tone = "slate" }: { children: ReactNode; tone?: keyof typeof tones | string }) {
-  return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${tones[tone] ?? tones.slate}`}>{children}</span>;
+  return <span className={`inline-flex items-center rounded-full px-3 py-0.5 text-xs font-medium ${tones[tone] ?? tones.slate}`}>{children}</span>;
 }
 
 export function PageHeader({ eyebrow, title, children, actions }: { eyebrow?: string; title: string; children?: ReactNode; actions?: ReactNode }) {
   return (
-    <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+    <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
       <div className="max-w-3xl">
-        {eyebrow && <p className="mb-1 text-xs font-bold uppercase tracking-widest text-brand">{eyebrow}</p>}
-        <h1 className="h1">{title}</h1>
-        {children && <div className="mt-2 text-slate-600">{children}</div>}
+        {eyebrow && <p className="eyebrow mb-2">{eyebrow}</p>}
+        <h1 className="h1"><span className="underline-mint">{title}</span></h1>
+        {children && <div className="mt-4 text-[15px] leading-relaxed text-ink/80">{children}</div>}
       </div>
       {actions && <div className="flex gap-2">{actions}</div>}
     </div>
@@ -27,31 +34,33 @@ export function Flash({ sp }: { sp: Record<string, string | string[] | undefined
   const msg = typeof sp.msg === "string" ? sp.msg : null, err = typeof sp.error === "string" ? sp.error : null;
   if (!msg && !err) return null;
   return (
-    <div role="status" className={`mb-5 rounded-xl border px-4 py-3 text-sm ${err ? "border-rose-200 bg-rose-50 text-rose-800" : "border-emerald-200 bg-emerald-50 text-emerald-800"}`}>
-      {err ?? msg}
+    <div role="status" className={`mb-6 flex items-start gap-3 rounded-lg border-l-4 px-4 py-3 text-[15px] ${err ? "border-[#c8102e] bg-[#fde8eb] text-[#7d0a1d]" : "border-green bg-tint text-ink"}`}>
+      {!err && <Icon name="check" className="mt-0.5 h-5 w-5 shrink-0" />}
+      <span>{err ?? msg}</span>
     </div>
   );
 }
 
 export function Empty({ title, children }: { title: string; children?: ReactNode }) {
   return (
-    <div className="rounded-2xl border border-dashed border-slate-300 bg-white/60 p-8 text-center">
-      <p className="font-semibold text-slate-700">{title}</p>
+    <div className="rounded-lg bg-cloud px-8 py-10 text-center">
+      <p className="font-semibold text-ink">{title}</p>
       {children && <div className="muted mt-1">{children}</div>}
     </div>
   );
 }
 
 export function Notice({ children, tone = "amber" }: { children: ReactNode; tone?: "amber" | "blue" | "slate" }) {
-  const c = { amber: "border-amber-200 bg-amber-50 text-amber-900", blue: "border-indigo-200 bg-indigo-50 text-indigo-900", slate: "border-slate-200 bg-slate-50 text-slate-700" }[tone];
-  return <div className={`rounded-xl border px-4 py-3 text-sm ${c}`}>{children}</div>;
+  const c = { amber: "border-[#e0a400] bg-[#fff8e5] text-[#5c3d00]", blue: "border-green bg-tint text-ink", slate: "border-ink/30 bg-cloud text-ink/85" }[tone];
+  return <div className={`rounded-md border-l-4 px-4 py-3 text-sm leading-relaxed ${c}`}>{children}</div>;
 }
 
 export function Tile({ href, title, children, tag }: { href: string; title: string; children?: ReactNode; tag?: ReactNode }) {
   return (
-    <Link href={href} className="card block transition hover:-translate-y-0.5 hover:border-indigo-300 hover:shadow-md">
+    <Link href={href} className="card group flex flex-col transition-shadow duration-200 hover:shadow-[0_6px_22px_rgba(22,48,61,0.12)]">
       <div className="flex items-start justify-between gap-2"><p className="font-semibold text-ink">{title}</p>{tag}</div>
-      {children && <div className="muted mt-1">{children}</div>}
+      {children && <div className="mt-2 flex-1 text-sm leading-relaxed text-ink/75">{children}</div>}
+      <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-ink">Find out more <Icon name="arrow-right" className="h-4 w-4 transition-transform group-hover:translate-x-0.5" /></span>
     </Link>
   );
 }
