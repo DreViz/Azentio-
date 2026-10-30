@@ -3,7 +3,9 @@ import { getViewer, can } from "@/lib/session";
 import { demoMode } from "@/lib/auth";
 import { runTrustChecks } from "@/lib/trust";
 import { Badge, Notice, PageHeader } from "@/components/ui";
+import Icon from "@/components/Icon";
 
+const ICONS = ["lock", "shield", "users", "layers", "check", "arrow-right", "chart", "document"] as const;
 const PROMISES = [
   ["Access is enforced by the database", "Every request runs as a restricted Postgres role with row-level security. Menus, URLs and client-side flags are never the control."],
   ["Deny by default", "Content needs an explicit audience. Public is a marked value, not a fallback for missing metadata."],
@@ -27,7 +29,7 @@ export default async function Trust({ searchParams }: { searchParams: Promise<Re
         The checks below sign in as each seeded persona and attempt the access the brief forbids, through the same database path the portal pages use. Probes that write are rolled back, so they never change data.
       </PageHeader>
       <div className="grid gap-3 md:grid-cols-4">
-        {PROMISES.map(([t, d]) => <div key={t} className="card"><p className="font-semibold text-ink">{t}</p><p className="muted mt-1">{d}</p></div>)}
+        {PROMISES.map(([t, d], i) => <div key={t} className="card"><Icon name={ICONS[i]} className="h-9 w-9 text-ink" /><p className="mt-4 font-semibold text-ink">{t}</p><p className="mt-2 text-sm leading-relaxed text-ink/75">{d}</p></div>)}
       </div>
       <div className="mt-8 flex flex-wrap items-center gap-3">
         {allowed ? <Link href="/trust?run=1" className="btn">Run live checks</Link> : <Notice>Live checks are available to portal administrators.</Notice>}
@@ -36,10 +38,10 @@ export default async function Trust({ searchParams }: { searchParams: Promise<Re
       {results && (
         <div className="card mt-5 overflow-x-auto p-0">
           <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase text-slate-500"><tr><th className="px-4 py-2">Test</th><th>Persona</th><th>Attempt</th><th>Expected</th><th>Actual</th><th className="pr-4">Result</th></tr></thead>
+            <thead className="bg-ink text-xs uppercase tracking-[0.06em] text-mint"><tr><th className="px-4 py-2">Test</th><th>Persona</th><th>Attempt</th><th>Expected</th><th>Actual</th><th className="pr-4">Result</th></tr></thead>
             <tbody>{results.map((r) => (
               <tr key={r.id} className="border-t align-top">
-                <td className="px-4 py-2 font-mono text-xs">{r.id}</td><td className="py-2">{r.persona}</td><td className="py-2">{r.attempt}</td><td className="py-2 text-slate-600">{r.expected}</td>
+                <td className="whitespace-nowrap px-4 py-2 font-mono text-xs">{r.id}</td><td className="py-2">{r.persona}</td><td className="py-2">{r.attempt}</td><td className="py-2 text-slate-600">{r.expected}</td>
                 <td className="py-2 font-mono text-xs text-slate-600">{r.actual} <span className="text-slate-400">({r.ms} ms)</span></td>
                 <td className="pr-4"><Badge tone={r.pass ? "green" : "red"}>{r.pass ? "PASS" : "FAIL"}</Badge></td>
               </tr>))}</tbody>
