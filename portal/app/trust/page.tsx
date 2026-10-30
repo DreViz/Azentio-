@@ -25,8 +25,8 @@ export default async function Trust({ searchParams }: { searchParams: Promise<Re
   const passed = results?.filter((r) => r.pass).length ?? 0;
   return (
     <div className="mx-auto max-w-6xl px-5 py-12">
-      <PageHeader eyebrow="Trust proof" title="Every privacy promise here has a test you can run.">
-        The checks below sign in as each seeded persona and attempt the access the brief forbids, through the same database path the portal pages use. Probes that write are rolled back, so they never change data.
+      <PageHeader eyebrow="Trust proof" title="The controls behind the promise">
+        Every privacy promise on this portal has a live check. The ones below sign in as each seeded persona and attempt the access the brief forbids, through the same database path the portal pages use. Probes that write are rolled back, so they never change data.
       </PageHeader>
       <div className="grid gap-3 md:grid-cols-4">
         {PROMISES.map(([t, d], i) => <div key={t} className="card"><Icon name={ICONS[i]} className="h-9 w-9 text-ink" /><p className="mt-4 font-semibold text-ink">{t}</p><p className="mt-2 text-sm leading-relaxed text-ink/75">{d}</p></div>)}

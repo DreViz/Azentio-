@@ -61,7 +61,7 @@ const offerings = [
     "Compare financing applications with relevant historical portfolio segments to understand patterns, risk indicators, and comparable outcomes.",
     ["Peer cohort discovery", "Portfolio comparisons", "Historical outcome context"], ["Select application", "Identify comparable cohort", "Compare indicators", "Review insights"]],
   ["rejection-intelligence", "Rejection Intelligence", "Credit Intelligence", "Rejection analysis and simulation",
-    "Analyze declined applications, uncover rejection patterns, and simulate changes that could improve eligible approvals.",
+    "Analyse declined applications, uncover rejection patterns, and simulate changes that could increase eligible approvals.",
     ["Rejection pattern analysis", "What-if eligibility simulation", "Reason-code transparency"], ["Load declined applications", "Cluster reasons", "Simulate changes", "Review impact"]],
   ["riva", "RIVA", "Reporting & Analytics", "Reporting intelligence, validation and analytics",
     "A configurable reporting environment connecting data sources, mapping report fields, supporting validation, and simplifying reporting workflows.",

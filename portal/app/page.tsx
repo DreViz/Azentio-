@@ -62,7 +62,7 @@ export default async function Home() {
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-6 px-5 py-12">
           <div>
             <h2 className="text-3xl font-semibold text-ink">Ask AIRA in seconds</h2>
-            <p className="mt-2 text-[15px] text-ink/85">Answers cite their sources, and only from content you are allowed to see.</p>
+            <p className="mt-2 text-[15px] text-ink/85">Answers are drawn only from content you are allowed to see, and every answer cites its sources.</p>
           </div>
           <form action="/aira" className="flex w-full max-w-xl gap-2">
             <label htmlFor="home-q" className="sr-only">Question for AIRA</label>
@@ -78,7 +78,7 @@ export default async function Home() {
           <div>
             <p className="text-sm text-white/80">How collective learning works</p>
             <h2 className="mt-3 text-4xl font-semibold leading-tight text-mint md:text-[2.75rem]">Private by default.<br />Shared by choice.</h2>
-            <p className="mt-6 max-w-lg text-[15px] leading-relaxed text-white/85">Clients keep their original. Moderators publish a reviewed, de-identified copy. Trends are counted by institution, never by post, and withdrawal takes effect immediately.</p>
+            <p className="mt-6 max-w-lg text-[15px] leading-relaxed text-white/85">Clients keep their original. Moderators publish a reviewed, de-identified copy. Trends are counted by institution, never by post, and withdrawal is applied at once everywhere it is read.</p>
             <div className="mt-12 flex gap-10">
               <div><p className="text-6xl font-light">2</p><p className="mt-2 text-[15px] text-white/85">copies of every<br />shared observation</p></div>
               <div className="w-px bg-white/30" />

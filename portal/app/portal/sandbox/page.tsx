@@ -35,7 +35,7 @@ export default async function Sandbox({ searchParams }: { searchParams: Promise<
                   <span className="mt-2 flex h-10 items-end gap-0.5" aria-label="Monthly inflows, last 24 months">
                     {a.inflows.map((x, k) => <span key={k} className="w-full rounded-sm bg-indigo-300" style={{ height: `${Math.max(6, (x / Math.max(...a.inflows)) * 100)}%` }} />)}
                   </span>
-                  <span className="muted text-xs">Instalment {a.emi.toLocaleString("en-IN")} per month</span>
+                  <span className="muted text-xs">Instalment: ₹{a.emi.toLocaleString("en-IN")} per month</span>
                 </label>))}
             </fieldset>
             <fieldset><legend className="label">3. Method</legend>
