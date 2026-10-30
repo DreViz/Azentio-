@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #0b1b3f;
+  --color-brand: #3b5bfd;
+  --color-brand-2: #06b6d4;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+body { background: #f6f7fb; color: #0f172a; }
+.btn { @apply inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:opacity-50; }
+.btn-ghost { @apply inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50; }
+.btn-danger { @apply inline-flex items-center gap-2 rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-700; }
+.card { @apply rounded-2xl border border-slate-200 bg-white p-5 shadow-sm; }
+.input { @apply mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-indigo-200; }
+.label { @apply block text-sm font-medium text-slate-700; }
+.h1 { @apply text-3xl font-bold tracking-tight text-ink; }
+.h2 { @apply text-xl font-semibold text-ink; }
+.muted { @apply text-sm text-slate-500; }
+.link { @apply font-medium text-brand hover:underline; }
+.prose-sm p { @apply mb-2; }
