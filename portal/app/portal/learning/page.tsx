@@ -6,6 +6,11 @@ import { reportItem } from "@/app/actions/portal";
 
 type Item = { id: string; title: string; body: string; type: string; offering_id: string | null; industry: string; region_band: string; period_label: string; evidence_type: string; confidence: string; attribution_label: string | null; published_at: string; theme: string | null };
 const FILTERS = ["offering_id", "industry", "region_band", "type"] as const;
+async function seq<T, R>(xs: readonly T[], fn: (x: T) => Promise<R>): Promise<R[]> {
+  const out: R[] = [];
+  for (const x of xs) out.push(await fn(x));
+  return out;
+}
 
 export default async function Learning({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const sp = await searchParams;
@@ -20,8 +25,9 @@ export default async function Learning({ searchParams }: { searchParams: Promise
     items: await q<Item>(`select s.id, s.title, s.body, s.type, s.offering_id, s.industry, s.region_band, s.period_label, s.evidence_type, s.confidence, s.attribution_label, s.published_at, t.title theme
       from shared_items s left join themes t on t.id = s.theme_id where ${where.join(" and ")} order by s.published_at desc limit 100`, args),
     // Facet counts come from a function that withholds any value backed by too few organisations.
-    facets: Object.fromEntries(await Promise.all(FILTERS.map(async (f) => [f, await q<{ value: string; items: number; orgs: number | null }>("select * from facet_counts($1)", [f])]))) as Record<string, { value: string; items: number; orgs: number | null }[]>,
-    options: Object.fromEntries(await Promise.all(FILTERS.map(async (f) => [f, (await q<{ v: string }>(`select distinct ${f} v from shared_items where status = 'published' and ${f} is not null order by 1`)).map((r) => r.v)]))) as Record<string, string[]>,
+    // Sequential on purpose: one transaction means one connection, which cannot run queries in parallel.
+    facets: Object.fromEntries(await seq(FILTERS, async (f) => [f, await q<{ value: string; items: number; orgs: number | null }>("select * from facet_counts($1)", [f])])) as Record<string, { value: string; items: number; orgs: number | null }[]>,
+    options: Object.fromEntries(await seq(FILTERS, async (f) => [f, (await q<{ v: string }>(`select distinct ${f} v from shared_items where status = 'published' and ${f} is not null order by 1`)).map((r) => r.v)])) as Record<string, string[]>,
   }));
   return (
     <div>
