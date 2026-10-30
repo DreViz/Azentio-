@@ -1,6 +1,6 @@
 # Lifecycle test results
 
-Run 2026-10-30T09:58:41.582Z. 41/41 passed. Each test runs as personas through the portal_app role in a rolled-back transaction.
+Run 2026-10-30T16:08:49.223Z. 41/41 passed. Each test runs as personas through the portal_app role in a rolled-back transaction.
 
 | Test | Area | Scenario | Result |
 |---|---|---|---|
