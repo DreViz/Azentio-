@@ -339,6 +339,30 @@ t("LC-40", "Federated", "Model runs are visible to employees only and decisions 
   if (r) { await refused("select fl_decide($1, 'approved')", [r.id], /portal administrator/); await as("ada"); await q("select fl_decide($1, 'approved')", [r.id]); }
 });
 
+// ---------------------------------------------------------------- review hardening
+t("LC-41", "Moderation", "A moderator cannot review their own contribution", async () => {
+  await as("maya"); const id = await draft(); await q("select contribution_submit($1)", [id]);
+  await refused("select contribution_publish($1, $2, '')", [id, PUB], /own contribution/);
+  await refused("select contribution_return($1, 'Please clarify this.')", [id], /own contribution/);
+  await refused("select contribution_reject($1, 'Not suitable here.', '')", [id], /own contribution/);
+});
+t("LC-42", "Versions", "Publishing a revision does not rewrite a withdrawn parent as superseded", async () => {
+  await as("sam"); const id = await draft(); await q("select contribution_submit($1)", [id]);
+  await as("maya"); await q("select contribution_publish($1, $2, '')", [id, PUB]);
+  await as("sam"); const { nid } = await one("select contribution_new_version($1) nid", [id]);
+  await q("select contribution_withdraw($1)", [id]);
+  await q("select consent_set($1, 'publish', true)", [nid]); await q("select contribution_submit($1)", [nid]);
+  await as("maya"); await q("select contribution_publish($1, $2, '')", [nid, PUB]);
+  await as("sam"); check((await one("select state from contributions where id = $1", [id])).state === "withdrawn", "withdrawn parent was rewritten");
+});
+t("LC-43", "Consent", "Consent state is visible only to the author or a moderator, and notify() is not callable", async () => {
+  await as("sam"); const id = await draft("org", { store: true, publish: true });
+  check((await one("select consent_value($1, 'publish') v", [id])).v === true, "author cannot read own consent");
+  await as("alex"); check((await one("select consent_value($1, 'publish') v", [id])).v === false, "colleague can read consent state");
+  await as("li"); check((await one("select consent_value($1, 'publish') v", [id])).v === false, "other client can read consent state");
+  await refused("select notify($1, 'spoofed message', null)", [U.sam], /permission denied/);
+});
+
 // ---------------------------------------------------------------- runner
 let pass = 0;
 const rows = [];

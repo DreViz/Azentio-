@@ -351,7 +351,9 @@ create function notify(u uuid, msg text, lnk text) returns void language sql sec
 $$ insert into notifications(user_id, message, link) values (u, msg, lnk) $$;
 
 create function consent_value(cid uuid, k text) returns boolean language sql stable security definer set search_path = public as
-$$ select coalesce((select granted from consents where contribution_id = cid and kind = k order by id desc limit 1), false) $$;
+$$ select coalesce((select granted from consents where contribution_id = cid and kind = k order by id desc limit 1), false)
+     -- answers only for the author or a moderator; anyone else learns nothing about the item
+     and exists(select 1 from contributions x where x.id = cid and (x.author_id = app_uid() or has_grant('moderator'))) $$;
 
 -- ---------------------------------------------------------------- row-level security
 alter table users enable row level security;
@@ -544,6 +546,7 @@ declare c contributions;
 begin
   if not has_grant('moderator') then raise exception 'not allowed'; end if;
   select * into c from contributions where id = cid for update;
+  if c.author_id is not distinct from app_uid() then raise exception 'you cannot review your own contribution'; end if;
   if c.state <> 'submitted' or c.visibility <> 'proposed_shared' then raise exception 'illegal transition % -> returned', c.state; end if;
   if coalesce(length(trim(why)), 0) < 5 then raise exception 'a reason is required'; end if;
   update contributions set state = 'returned', return_reason = why, updated_at = now() where id = cid;
@@ -557,6 +560,7 @@ declare c contributions;
 begin
   if not has_grant('moderator') then raise exception 'not allowed'; end if;
   select * into c from contributions where id = cid for update;
+  if c.author_id is not distinct from app_uid() then raise exception 'you cannot review your own contribution'; end if;
   if c.state <> 'submitted' or c.visibility <> 'proposed_shared' then raise exception 'illegal transition % -> rejected', c.state; end if;
   update contributions set state = 'rejected', updated_at = now() where id = cid;
   insert into reviews(contribution_id, reviewer_id, decision, reason) values (cid, app_uid(), 'rejected', why);
@@ -571,6 +575,7 @@ declare c contributions; sid uuid; attr text;
 begin
   if not has_grant('moderator') then raise exception 'not allowed'; end if;
   select * into c from contributions where id = cid for update;
+  if c.author_id is not distinct from app_uid() then raise exception 'you cannot review your own contribution'; end if;
   if c.state <> 'submitted' or c.visibility <> 'proposed_shared' then raise exception 'illegal transition % -> published', c.state; end if;
   if not consent_value(cid, 'publish') then raise exception 'author has not consented to publication'; end if;
   attr := nullif(p->>'attribution_label', '');
@@ -582,7 +587,8 @@ begin
   -- a newer version replaces the older shared copy only now, after its own review
   if c.parent_id is not null then
     update shared_items set status = 'superseded', updated_at = now() where contribution_id = c.parent_id and status in ('published','unpublished');
-    update contributions set state = 'superseded', updated_at = now() where id = c.parent_id;
+    -- only a live parent becomes superseded; a withdrawn parent keeps its withdrawn state in the history
+    update contributions set state = 'superseded', updated_at = now() where id = c.parent_id and state = 'published';
   end if;
   update contributions set state = 'published', updated_at = now() where id = cid;
   insert into reviews(contribution_id, reviewer_id, decision, reason) values (cid, app_uid(), 'published', 'Published after review and de-identification');
@@ -803,3 +809,5 @@ end $$;
 
 revoke all on all functions in schema public from public;
 grant execute on all functions in schema public to portal_app;
+-- notify() is an internal helper for the lifecycle functions; the app role must not message users directly.
+revoke execute on function notify(uuid, text, text) from portal_app;
