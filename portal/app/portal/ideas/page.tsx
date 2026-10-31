@@ -42,7 +42,7 @@ export default async function Ideas({ searchParams }: { searchParams: Promise<Re
             <p className="muted mt-1">{i.owner_team} · {i.offering_id} · {i.evidence} linked approved observations · updated {fmtDate(i.updated_at)}</p>
             <p className="mt-2 rounded-lg bg-indigo-50 px-3 py-2 text-sm text-indigo-900">Client-visible note: {i.public_note || "(none)"}</p>
             <details className="mt-2 text-sm"><summary className="cursor-pointer text-slate-500">Status history (audited)</summary>
-              {d.history.filter((h) => h.idea_id === i.id).map((h, k) => <p key={k} className="muted">{fmtTime(h.created_at)}: {h.from_status ?? "new"} → {h.to_status}. {h.note}</p>)}
+              {d.history.filter((h) => h.idea_id === i.id).map((h, k) => <p key={k} className="muted">{fmtTime(h.created_at)}: {h.from_status ?? "new"} to {h.to_status}. {h.note}</p>)}
             </details>
             {po && (
               <form action={setIdeaStatus} className="mt-3 flex flex-wrap items-end gap-2 border-t pt-3">

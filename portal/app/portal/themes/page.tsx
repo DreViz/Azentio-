@@ -30,10 +30,10 @@ export default async function Themes({ searchParams }: { searchParams: Promise<R
           {suggestions.map((s, i) => (
             <form key={i} action={createTheme} className="card space-y-3">
               <div className="grid gap-3 md:grid-cols-2">
-                <div><label className="label">Theme title</label><input name="title" defaultValue={s.title} required className="input" /></div>
-                <div><label className="label">Limitations</label><input name="limitations" required className="input" defaultValue={`Small, self-reported sample (${s.item_ids.length} observations). Not evidence of market prevalence or causation.`} /></div>
+                <div><label className="label" htmlFor={`t-title-${i}`}>Theme title</label><input id={`t-title-${i}`} name="title" defaultValue={s.title} required className="input" /></div>
+                <div><label className="label" htmlFor={`t-lim-${i}`}>Limitations</label><input id={`t-lim-${i}`} name="limitations" required className="input" defaultValue={`Small, self-reported sample (${s.item_ids.length} observations). Not evidence of market prevalence or causation.`} /></div>
               </div>
-              <div><label className="label">Summary</label><input name="summary" defaultValue={s.summary} required className="input" /></div>
+              <div><label className="label" htmlFor={`t-sum-${i}`}>Summary</label><input id={`t-sum-${i}`} name="summary" defaultValue={s.summary} required className="input" /></div>
               <fieldset className="text-sm"><legend className="label">Linked evidence</legend>
                 {unthemed.filter((u) => s.item_ids.includes(u.id)).map((u) => <label key={u.id} className="flex gap-2"><input type="checkbox" name="item" value={u.id} defaultChecked /> {u.title}</label>)}
               </fieldset>

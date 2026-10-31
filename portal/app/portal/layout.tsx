@@ -20,12 +20,12 @@ export default async function PortalLayout({ children }: { children: React.React
   if (admin.length) sections.push(["Manage", admin]);
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-8 md:flex-row md:gap-8">
-      <details className="rounded-lg bg-cloud p-4 md:hidden">
-        <summary className="cursor-pointer text-sm font-semibold text-ink">Portal menu · {v.activeOrg?.org_name ?? "No workspace"}</summary>
+      <details className="rounded-lg bg-cloud py-3 md:hidden">
+        <summary className="cursor-pointer px-4 text-sm font-semibold text-ink">Portal menu · {v.activeOrg?.org_name ?? "No workspace"}</summary>
         {sections.map(([title, links]) => (
           <nav key={title} aria-label={`${title} (mobile)`} className="mt-3">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{title}</p>
-            {links.map(([href, label]) => <Link key={href + label} href={href} className="block rounded-md px-2 py-1.5 text-sm text-slate-700 hover:bg-slate-100">{label}</Link>)}
+            <p className="mb-1 px-4 text-xs font-semibold uppercase tracking-[0.06em] text-green-deep">{title}</p>
+            {links.map(([href, label]) => <NavLink key={href + label} href={href}>{label}</NavLink>)}
           </nav>
         ))}
       </details>

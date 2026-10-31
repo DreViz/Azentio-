@@ -45,9 +45,18 @@ export default async function Header() {
           )}
           <details className="relative lg:hidden">
             <summary className="grid h-11 w-11 cursor-pointer list-none place-items-center rounded-full text-ink hover:bg-cloud" aria-label="Open menu"><Icon name="menu" accent={false} /></summary>
-            <nav aria-label="Main (mobile)" className="absolute right-0 top-12 z-40 w-56 rounded-lg border border-black/[0.06] bg-white p-2 shadow-lg">
+            <nav aria-label="Main (mobile)" className="absolute right-0 top-12 z-40 w-64 rounded-lg border border-black/[0.06] bg-white p-2 shadow-lg">
+              {v && <Link href="/portal" className="block rounded-md px-3 py-2.5 text-[15px] font-semibold text-ink hover:bg-cloud">Portal</Link>}
+              {v && v.memberships.length > 1 && (
+                <form action={switchOrgAction} className="border-b border-black/[0.06] px-3 pb-3 pt-1">
+                  <label htmlFor="ws-mobile" className="text-xs text-muted">Active workspace</label>
+                  <select id="ws-mobile" name="org_id" defaultValue={v.activeOrg?.org_id} className="input mt-1 py-2 text-sm">
+                    {v.memberships.map((m) => <option key={m.org_id} value={m.org_id}>{m.org_name}</option>)}
+                  </select>
+                  <button className="btn-dark mt-2 w-full py-2 text-sm">Switch workspace</button>
+                </form>
+              )}
               {PUBLIC.map(([href, label]) => <Link key={href} href={href} className="block rounded-md px-3 py-2.5 text-[15px] text-ink hover:bg-cloud">{label}</Link>)}
-              <Link href="/trust" className="block rounded-md px-3 py-2.5 text-[15px] text-ink hover:bg-cloud">Trust</Link>
             </nav>
           </details>
         </div>

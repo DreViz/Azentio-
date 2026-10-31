@@ -29,6 +29,23 @@
   --color-indigo-900: #16303d;
   --color-violet-50: #eef2f4;
   --color-violet-700: #16303d;
+
+  /* Slate becomes brand neutrals (400 and up pass 4.5:1 on white); emerald becomes the brand greens. */
+  --color-slate-50: #f8f9fa;
+  --color-slate-100: #efefef;
+  --color-slate-200: #e2e6e8;
+  --color-slate-300: #cdd3d6;
+  --color-slate-400: #5f6c75;
+  --color-slate-500: #56626b;
+  --color-slate-600: #3f4d56;
+  --color-slate-700: #2a3b45;
+  --color-slate-800: #16303d;
+  --color-slate-900: #16303d;
+  --color-emerald-50: #e6fff5;
+  --color-emerald-100: #ccfbe9;
+  --color-emerald-200: #9cf2d0;
+  --color-emerald-700: #0e7a52;
+  --color-emerald-800: #0b6143;
 }
 
 html { scroll-behavior: smooth; }

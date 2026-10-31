@@ -55,7 +55,7 @@ export default async function Learning({ searchParams }: { searchParams: Promise
                   <form action={reportItem} className="mt-2 flex flex-wrap gap-2">
                     <input type="hidden" name="sid" value={s.id} />
                     <select name="reason" className="input mt-0 w-auto text-xs" aria-label="Reason"><option value="misleading">Misleading</option><option value="confidential">Confidential</option><option value="inappropriate">Inappropriate</option><option value="duplicate">Duplicate</option></select>
-                    <input name="details" maxLength={1000} placeholder="Optional details. No need to name anyone." className="input mt-0 w-64 text-xs" />
+                    <input name="details" aria-label="Report details" maxLength={1000} placeholder="Optional details. No need to name anyone." className="input mt-0 w-64 text-xs" />
                     <button className="btn-ghost px-2 py-1 text-xs">Send</button>
                   </form>
                 </details>

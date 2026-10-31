@@ -51,13 +51,13 @@ export default async function Sandbox({ searchParams }: { searchParams: Promise<
                 <p className="mt-2 font-semibold">{r.applicant}</p>
                 <p className="mt-2 rounded-lg bg-slate-50 p-3 text-lg font-semibold text-ink">{r.indicative}</p>
                 <table className="mt-3 w-full text-sm"><tbody>{r.metrics.map((m) => <tr key={m.name} className="border-t"><td className="py-1.5">{m.name}</td><td className="text-right font-mono">{m.value}</td></tr>)}</tbody></table>
-                <h3 className="mt-3 font-semibold">Evidence</h3><ul className="list-disc pl-5 text-sm">{r.evidence.map((e) => <li key={e}>{e}</li>)}</ul>
+                <h2 className="mt-3 font-semibold">Evidence</h2><ul className="list-disc pl-5 text-sm">{r.evidence.map((e) => <li key={e}>{e}</li>)}</ul>
                 <p className="mt-3 text-xs font-semibold text-rose-700">{r.caution}</p>
                 <form action={sandboxFeedback} className="mt-4 space-y-2 border-t pt-3">
                   <input type="hidden" name="id" value={d.run!.id} />
                   <p className="label">Structured feedback</p>
                   <div className="flex gap-3 text-sm">{[["useful", "Useful"], ["needs_evidence", "Needs evidence"], ["wrong", "Looks wrong"]].map(([k, l]) => <label key={k}><input type="radio" name="rating" value={k} defaultChecked={d.run!.rating === k} required /> {l}</label>)}</div>
-                  <input name="feedback" maxLength={1000} placeholder="What would make this more useful?" className="input" />
+                  <input name="feedback" aria-label="Feedback comment" maxLength={1000} placeholder="What would make this more useful?" className="input" />
                   <button className="btn-ghost">Save feedback</button>
                 </form>
               </div>) : <Empty title="Run a demonstration to see the output" />}
