@@ -1,6 +1,6 @@
 # Lifecycle test results
 
-Run 2026-10-30T16:08:49.223Z. 41/41 passed. Each test runs as personas through the portal_app role in a rolled-back transaction.
+Run 2026-10-31T02:08:21.628Z. 44/44 passed. Each test runs as personas through the portal_app role in a rolled-back transaction.
 
 | Test | Area | Scenario | Result |
 |---|---|---|---|
@@ -45,3 +45,6 @@ Run 2026-10-30T16:08:49.223Z. 41/41 passed. Each test runs as personas through t
 | LC-38 | Public | Anonymous visitors can submit enquiries but cannot read them | PASS |
 | LC-39 | Notifications | Notifications are private to their recipient | PASS |
 | LC-40 | Federated | Model runs are visible to employees only and decisions need a portal admin | PASS |
+| LC-41 | Moderation | A moderator cannot review their own contribution | PASS |
+| LC-42 | Versions | Publishing a revision does not rewrite a withdrawn parent as superseded | PASS |
+| LC-43 | Consent | Consent state is visible only to the author or a moderator, and notify() is not callable | PASS |
