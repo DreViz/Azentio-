@@ -77,7 +77,7 @@ export function ruleProposal(src: Source, orgNames: string[]): Proposal {
   const flags: Flag[] = [];
   const title = applyRules(src.title, orgNames, flags);
   const body = applyRules(src.body, orgNames, flags);
-  return { title, body, industry: src.industry, region_band: regionBand(src.region), period_label: periodLabel(src.period_start, src.period_end), flags, ...risk(flags), engine: "rules" };
+  return { title, body, industry: applyRules(src.industry, orgNames, flags), region_band: regionBand(src.region), period_label: periodLabel(src.period_start, src.period_end), flags, ...risk(flags), engine: "rules" };
 }
 
 const SYSTEM = `You help a human moderator de-identify a client market observation before it is shared with other financial institutions.
@@ -87,12 +87,14 @@ Prefer generalisation over deletion ("a mid-size agri-processing SME in Western 
 Return only JSON: {"title": string, "body": string, "risk": "low"|"medium"|"high", "reasons": string[] (max 4, plain English)}.`;
 
 /**
- * Moderation copilot. Rules always run first and the model only sees the rule-scrubbed text,
- * so direct identifiers never leave the server. The model then rewrites for re-identification risk.
+ * Moderation copilot. Rules always run first and the model only sees the rule-scrubbed fields.
+ * The rules catch common identifiers (names with business suffixes, accounts, contacts, dates, amounts,
+ * places), not every possible one, so the human review stays the control. The model then rewrites for
+ * re-identification risk.
  */
 export async function proposeRedaction(src: Source, orgNames: string[]): Promise<Proposal> {
   const base = ruleProposal(src, orgNames);
-  const reply = await ai(SYSTEM, JSON.stringify({ title: base.title, body: base.body, industry: src.industry, region: base.region_band, period: base.period_label }));
+  const reply = await ai(SYSTEM, JSON.stringify({ title: base.title, body: base.body, industry: base.industry, region: base.region_band, period: base.period_label }));
   const j = parseJson<{ title: string; body: string; risk: Proposal["risk"]; reasons: string[] }>(reply);
   if (!j?.title || !j?.body) return base;
   // Re-scan the model output: the model is assistance, not the control.

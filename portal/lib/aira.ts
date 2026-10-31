@@ -46,14 +46,15 @@ Cite passages inline like [1] or [2]. If the passages do not answer the question
 Shared client observations are small, self-reported samples: never present them as market prevalence or proof of causation.
 Sandbox outputs and product descriptions are indicative, not commitments. Keep answers under 160 words.`;
 
-export async function answer(q: Q, question: string): Promise<AiraAnswer> {
+/** `useModel` is false for anonymous visitors, so the paid model path cannot be driven without signing in. */
+export async function answer(q: Q, question: string, useModel = true): Promise<AiraAnswer> {
   const t0 = Date.now();
   const citations = await retrieve(q, question);
   if (!citations.length) {
     return { answer: "I could not find approved evidence you are permitted to see that answers this. Try different words, or ask about a product.", citations, engine: "extractive", ms: Date.now() - t0 };
   }
   const passages = citations.map((c) => `<passage ref="${c.ref}" kind="${c.kind}" title="${c.title.replace(/"/g, "'")}">\n${c.snippet}\n</passage>`).join("\n");
-  const reply = await ai(SYSTEM, `${passages}\n\nQuestion: ${question}`, { maxTokens: 600 });
+  const reply = useModel ? await ai(SYSTEM, `${passages}\n\nQuestion: ${question}`, { maxTokens: 600 }) : null;
   if (reply) return { answer: reply, citations, engine: "model", ms: Date.now() - t0 };
   const lines = citations.slice(0, 3).map((c) => `${c.ref} ${c.title}: ${c.snippet.slice(0, 220)}${c.snippet.length > 220 ? "…" : ""}`);
   return { answer: `Here is what the evidence you can access says:\n\n${lines.join("\n\n")}`, citations, engine: "extractive", ms: Date.now() - t0 };

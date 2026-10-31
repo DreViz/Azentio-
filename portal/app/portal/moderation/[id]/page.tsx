@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { requireViewer, db, can } from "@/lib/session";
 import { system } from "@/lib/db";
 import { Badge, Empty, Flash, Notice, PageHeader } from "@/components/ui";
-import { proposeRedaction } from "@/lib/redact";
+import { proposeRedaction, ruleProposal } from "@/lib/redact";
 import { human } from "@/lib/labels";
 import { publishContribution, rejectContribution, returnContribution } from "@/app/actions/portal";
 import { uuid } from "@/lib/validate";
@@ -28,7 +28,8 @@ export default async function Review({ params, searchParams }: { params: Promise
   // Institution names are needed to scrub mentions of participants. They are read on the system path
   // and used only inside the redaction function; the moderator is not shown who the author is.
   const orgNames = (await system((q) => q<{ name: string }>("select regexp_replace(name, ' \\(fictional\\)', '') name from organisations where kind = 'client'"))).map((r) => r.name);
-  const p = await proposeRedaction(d.c, orgNames);
+  // Only text actually awaiting review, with publication consent, may go to the model; everything else stays local.
+  const p = d.c.state === "submitted" && d.consents.publish ? await proposeRedaction(d.c, orgNames) : ruleProposal(d.c, orgNames);
   const actionable = d.c.state === "submitted";
   return (
     <div>
@@ -85,7 +86,7 @@ export default async function Review({ params, searchParams }: { params: Promise
               <input type="hidden" name="id" value={d.c.id} />
               <label className="label" htmlFor="rej">Reject (reason sent to author)</label>
               <textarea id="rej" name="reason" required minLength={5} rows={2} className="input" placeholder="Duplicate, unsafe or out of scope" />
-              <input name="note" placeholder="Internal note (optional)" className="input" />
+              <input name="note" aria-label="Internal note for moderators" placeholder="Internal note (optional)" className="input" />
               <button className="btn-danger" disabled={!actionable}>Reject</button>
             </form>
           </div>

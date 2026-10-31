@@ -7,7 +7,7 @@ export default async function Aira({ searchParams }: { searchParams: Promise<Rec
   const sp = await searchParams;
   const v = await getViewer();
   const question = (sp.q ?? "").slice(0, 500).trim();
-  const res = question ? await db(v, (q) => answer(q, question)) : null;
+  const res = question ? await db(v, (q) => answer(q, question, !!v)) : null;
   const who = !v ? "public visitor" : v.isEmployee ? "employee" : v.activeOrg ? `member of ${v.activeOrg.org_name}` : "signed-in user without a workspace";
   return (
     <div className="mx-auto max-w-3xl px-5 py-12">
