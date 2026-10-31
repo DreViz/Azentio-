@@ -9,8 +9,13 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
   const v = await getViewer();
   const [m] = await db(v, (q) => q<{ filename: string; mime: string }>("select filename, mime from media where id = $1", [id]));
   if (!m) return new Response("Not found", { status: 404 });
-  const file = await fs.readFile(path.join(process.cwd(), "storage", path.basename(m.filename)));
-  return new Response(file, {
+  let file: Buffer;
+  try {
+    file = await fs.readFile(path.join(process.cwd(), "storage", path.basename(m.filename)));
+  } catch {
+    return new Response("Not found", { status: 404 }); // record exists but the file is missing from this deployment
+  }
+  return new Response(new Uint8Array(file), {
     headers: {
       "content-type": m.mime,
       "cache-control": "private, no-store",
