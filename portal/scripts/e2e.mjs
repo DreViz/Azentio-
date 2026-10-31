@@ -67,7 +67,7 @@ try {
     await page.click("text=Verify and continue");
     await page.waitForURL(/\/portal/);
     await page.waitForSelector("text=No workspace yet"); // count() does not auto-wait, so wait for the streamed render first
-    expect(await page.locator("text=No workspace yet").count() === 1, "An unknown verified email signs in with no workspace and no data");
+    expect(await page.getByRole("heading", { name: "No workspace yet" }).isVisible(), "An unknown verified email signs in with no workspace and no data");
     await shot(page, "00-no-workspace");
     await page.click("text=Sign out");
     await page.waitForURL(`${BASE}/`);
