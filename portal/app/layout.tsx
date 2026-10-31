@@ -8,7 +8,9 @@ import "./globals.css";
 const poppins = Poppins({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"], variable: "--font-poppins", display: "swap" });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3100"),
+  // Link previews need an absolute URL: explicit site URL first, then Vercel's production domain, then local.
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL
+    || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3100")),
   title: "azentio.ai | Build intelligence. Create shared value.",
   description: "Applied AI for financial services, a secure client and employee portal, and governed collective learning.",
   openGraph: {
