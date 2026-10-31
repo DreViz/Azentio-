@@ -81,9 +81,9 @@ flowchart LR
 
 | Model on holdout | AUC |
 |---|---|
-| Raw volatility rule | about 0.56 |
-| Best local-only model | about 0.78 |
-| Federated global model | about 0.78, highest of all |
+| Raw volatility rule | 0.562 |
+| Local-only models (four institutions) | 0.772 to 0.780 |
+| Federated global model | 0.781, highest, by a small margin |
 
 This track is labelled honestly. It uses plain averaging, with no secure aggregation and no differential privacy accounting. Updates can leak information and clients can poison training. Withdrawal stops future participation but does not "untrain" a model. Authenticated participants, secure aggregation and differential privacy are designed but not implemented.
 
@@ -113,11 +113,12 @@ npm run dev                         # http://localhost:3100, judging kit at /jud
 npm run verify
 ```
 
-This runs the redaction self-check, reseeds, and runs 41 lifecycle tests and 21 HTTP checks. It then renders every page as every persona, runs the 30-step browser scenario including sign-in safeguards, and reseeds. It needs the dev server running and Chrome at `/usr/bin/google-chrome`. The reports land in `docs/`.
+This runs the redaction and redirect self-checks, reseeds, and runs 44 lifecycle tests and 21 HTTP checks. It then renders every page as every persona, runs the 30-step browser scenario including sign-in safeguards, and reseeds. It needs the dev server running and Chrome at `/usr/bin/google-chrome`. The reports land in `docs/`.
 
 **Deploy (Vercel and any Postgres 14+):**
 1. Run `npm run db:seed` against the hosted database once. The owner needs the `CREATEROLE` privilege.
-2. Set `DATABASE_URL`, `DEMO_MODE` and optionally `ANTHROPIC_API_KEY` in the Vercel project.
+2. Set `DATABASE_URL`, `DEMO_MODE`, `NEXT_PUBLIC_SITE_URL` and optionally `ANTHROPIC_API_KEY` (with `ANTHROPIC_BASE_URL`, `AI_MODEL` and `AI_FAST_MODEL` for a non-Anthropic endpoint) in the Vercel project.
+   - With `DEMO_MODE=true`, sign-in codes are shown on screen only for the seeded personas and reserved `.example` addresses, so real mailboxes cannot be taken over. Anyone with the URL can still sign in as a seeded persona, including the admin, so treat a public demo database as disposable and reseed it after judging.
 3. Transaction-mode connection pooling is compatible, because the role and context are set with `SET LOCAL` per transaction.
 
 ## AI disclosure

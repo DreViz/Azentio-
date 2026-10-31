@@ -1,6 +1,6 @@
 # Special Challenge: approach and work log
 
-Status: build complete and verified locally on 30 Oct 2026, 15:40 IST. Not yet deployed, not yet submitted.
+Status: build complete, restyled to azentio.com and re-reviewed; verified locally on 31 Oct 2026. Not yet deployed, not yet submitted.
 Team: Vaibhav and Muzammil. Code: `portal/`. Original plan: `PLAN.md` (kept as written; the decisions below supersede it where they differ).
 
 ## 1. What Azentio asked for
@@ -30,7 +30,7 @@ The cover promises acceptance tests, but none are included, so we wrote our own.
 | All lifecycle changes go through `SECURITY DEFINER` functions | Each function enforces allowed transitions, checks the grant, and writes the audit event and notification in one transaction. |
 | Our own email-code sign-in, with SMTP optional | It is a real single-use, expiring code flow with no external account needed. Demo mode shows codes for seeded personas, clearly labelled. |
 | Postgres full-text search, no vector database | There is no second index to purge, so withdrawal is synchronous by construction. |
-| Claude is optional, with deterministic fallbacks | No API key is available here, and the demo must not depend on network access. The UI labels which engine answered. |
+| The model is optional, with deterministic fallbacks | The demo must not depend on a key or network access. Any Anthropic-compatible endpoint works (Muzammil verified DeepSeek on 31 Oct). The UI labels which engine answered. |
 | Federated track in plain JavaScript | numpy would not install. One language, and results flow straight into the portal. |
 | Code kept outside `hacky-culture` | That repo forbids code before the finale window. |
 
@@ -59,7 +59,7 @@ The cover promises acceptance tests, but none are included, so we wrote our own.
 | Suite | Result | Command |
 |---|---|---|
 | Trust Proof, database-level persona attack probes | 24 / 24 | `/trust?run=1`, report in `portal/docs/trust-results.md` |
-| Lifecycle functional tests (workflow, consent, ideas, invitations, grants, sandbox) | 41 / 41 | `npm run test:lifecycle`, report in `portal/docs/lifecycle-results.md` |
+| Lifecycle functional tests (workflow, consent, ideas, invitations, grants, sandbox) | 44 / 44 | `npm run test:lifecycle`, report in `portal/docs/lifecycle-results.md` |
 | HTTP acceptance, including direct media links | 21 / 21 | `npm run test:acceptance` |
 | Every page as every persona | 0 server errors | `npm run test:smoke` |
 | Scenario plus sign-in safeguards in Chrome | 30 / 30 steps | `node scripts/e2e.mjs` |
@@ -87,7 +87,7 @@ The test case catalogue maps every brief requirement to its tests: `portal/docs/
    - Add `ANTHROPIC_API_KEY` to enable Claude.
    - Run `BASE_URL=<url> npm run test:acceptance` against the deployment.
 2. **Push the repo (Muzammil).** Commit under his own identity so both members show in history. The `.env.local` file is git-ignored.
-3. **Test with a Claude key (both).** The Claude code path is untested because there was no key. With a key, open one moderation review and one AIRA answer, and confirm the "Claude" badge appears.
+3. **Model key (done).** Muzammil verified the model path with DeepSeek through the Anthropic-compatible endpoint on 31 Oct. The badges read "Rules + model" and "Grounded".
 4. **Record the demo video (Vaibhav).** Follow the script in section 7.
 5. **Publish the LinkedIn posts (both).** Use the draft in section 8 and tag Azentio and HackCulture.
 6. **Submit (both).** Use the organisers' link and instructions, which arrive by end of day.
@@ -134,4 +134,14 @@ Attach: `12-trust-proof.png`, `04-moderation-copilot.png`, `06-themes.png`, `13-
 - **14:30.** Federated track, the Trust Proof checks and the HTTP acceptance suite.
 - **15:00.** Browser end-to-end run of the full scenario, which surfaced the bugs listed in section 5. Production build passes.
 - **15:15.** README, approach and work log.
-- **15:40.** Added the 41-test lifecycle suite, sign-in safeguard tests and mobile navigation. Fixed the two security bugs above. Wrote the build document and test case catalogue.
+- **15:40.** Added the lifecycle suite, sign-in safeguard tests and mobile navigation. Fixed the two security bugs above. Wrote the build document and test case catalogue.
+- **30 Oct, evening.** Restyled the whole site to azentio.com: Poppins, the brand colours, pill buttons, the official logo, duotone icons and the site's section layouts. Fixed a CSS layering bug that broke the mobile header.
+- **31 Oct, early.** Muzammil added Anthropic-compatible model endpoints (verified with DeepSeek), neutral model labels, link-preview cards and a branded tab icon, and hardened the e2e run for streamed renders.
+- **31 Oct, review.** Two independent reviews of the merged code. Fixed:
+  - demo mode no longer shows sign-in codes for real addresses, only for seeded personas and `.example` addresses;
+  - an open redirect after sign-in (`/\evil.com`);
+  - the copilot no longer sends withdrawn or rejected text to the model, and scrubs the industry field;
+  - anonymous AIRA questions no longer trigger paid model calls;
+  - moderators can no longer review their own contributions; a withdrawn version is no longer rewritten as superseded; consent state and notifications are locked down;
+  - raw error messages are no longer shown at sign-in; a missing media file returns 404;
+  - mobile menu gaps (portal link, workspace switcher, duplicate Trust link), unlabelled inputs, leftover off-brand greys, and link previews pointing at localhost after deployment.

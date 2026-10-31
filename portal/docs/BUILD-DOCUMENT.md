@@ -68,7 +68,7 @@ Screenshots of most of these are in `docs/screenshots/`.
 
 ## 4. How access is enforced
 
-1. **Sign-in.** The sign-in path in `lib/auth.ts` issues a six-digit code. It stores only a hash, expires in 10 minutes, and works once. It locks after 5 wrong attempts and allows at most 5 code requests per 15 minutes. A verified email creates a user record, but never a membership.
+1. **Sign-in.** The sign-in path in `lib/auth.ts` issues a six-digit code. Demo mode shows it on screen only for the seeded personas and reserved `.example` addresses, and the post-sign-in return path must stay on this site. It stores only a hash, expires in 10 minutes, and works once. It locks after 5 wrong attempts and allows at most 5 code requests per 15 minutes. A verified email creates a user record, but never a membership.
 2. **Session.** A random token sits in an httpOnly cookie and only its hash is stored. The active workspace is stored server-side in the session and changes only after a membership check.
 3. **Every request.** `asUser()` in `lib/db.ts` opens a transaction, runs `SET LOCAL ROLE portal_app`, and sets `app.user_id` and `app.org_id`. `portal_app` does not own the tables, so every row-level security policy in `db/schema.sql` applies to every read, including search, AIRA retrieval, facet counts and media lookups.
 4. **Helpers.**
@@ -109,8 +109,8 @@ shared copy: published ⇄ unpublished (report under review) ─▶ removed
 
 | Component | File | With a model key | Without a key | Data sent to the model |
 |---|---|---|---|---|
-| AIRA | `lib/aira.ts` | Grounded answer citing numbered passages | Extractive answer from the top passages | Only passages the user can already read, framed as data |
-| Moderation copilot | `lib/redact.ts` | Rules first, then a model rewrite for re-identification risk, then the rules again on the output | Rules only | Rule-scrubbed text only |
+| AIRA | `lib/aira.ts` | Grounded answer citing numbered passages, for signed-in users only (visitors get the extractive answer) | Extractive answer from the top passages | Only passages the user can already read, framed as data |
+| Moderation copilot | `lib/redact.ts` | Rules first, then a model rewrite for re-identification risk, then the rules again on the output. Only items awaiting review with publication consent are sent. | Rules only | Rule-scrubbed text only |
 | Theme suggestions | `lib/themes.ts` | The fast model groups items with their IDs | Keyword groups with written summaries | Approved, de-identified shared items |
 
 **The rules** remove emails, account numbers, phone numbers, amounts, exact dates, named businesses, people and participating institution names. They also coarsen cities to region bands and periods to a quarter, half-year or year. A self-test, including a false-positive guard, covers them.
@@ -158,7 +158,7 @@ shared copy: published ⇄ unpublished (report under review) ─▶ removed
 
 - **Automated suites.**
   - 24 Trust Proof checks.
-  - 41 lifecycle tests.
+  - 44 lifecycle tests.
   - 21 HTTP checks.
   - 30 browser steps.
   - A smoke render of every page as every persona.
