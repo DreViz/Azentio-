@@ -12,8 +12,9 @@
     "typecheck": "tsc --noEmit",
     "test:smoke": "node scripts/smoke.mjs",
     "test:redact": "tsx scripts/redact.test.ts",
-    "verify": "npm run -s test:redact && npm run -s db:seed && npm run -s fl && npm run -s test:lifecycle && npm run -s test:acceptance && npm run -s test:smoke && node scripts/e2e.mjs && npm run -s db:seed && npm run -s fl",
-    "test:lifecycle": "node scripts/lifecycle.test.mjs"
+    "verify": "npm run -s test:redact && npm run -s test:validate && npm run -s db:seed && npm run -s fl && npm run -s test:lifecycle && npm run -s test:acceptance && npm run -s test:smoke && node scripts/e2e.mjs && npm run -s db:seed && npm run -s fl",
+    "test:lifecycle": "node scripts/lifecycle.test.mjs",
+    "test:validate": "tsx scripts/validate.test.ts"
   },
   "dependencies": {
     "next": "16.4.3",

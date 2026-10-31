@@ -8,6 +8,14 @@ const CODE_TTL_MIN = 10;
 const SESSION_DAYS = 7;
 export const demoMode = () => process.env.DEMO_MODE === "true";
 
+/** Errors whose message is safe and meant for the user; anything else is shown as a generic failure. */
+export class AuthError extends Error {}
+
+// Demo mode shows codes on screen only for the seeded judging personas and reserved .example addresses,
+// which cannot receive real mail. A real mailbox can never be taken over through the demo flow.
+const SEEDED = new Set(["priya@azentio.com", "maya@azentio.com", "pat@azentio.com", "omar@azentio.com", "ada@azentio.com"]);
+export const demoEcho = (email: string) => demoMode() && (SEEDED.has(email) || /(\.example|@example\.(com|org|net))$/.test(email));
+
 /**
  * Issues a single-use six-digit code. In demo mode the code is returned so the judging page
  * can display it; otherwise it is only emailed. No account is created until the code is verified.
@@ -15,9 +23,10 @@ export const demoMode = () => process.env.DEMO_MODE === "true";
 export async function requestCode(email: string): Promise<{ code?: string; delivered: boolean }> {
   const code = sixDigits();
   await system(async (q) => {
+    await q("select pg_advisory_xact_lock(hashtext($1))", [email]); // serialise per email so parallel requests cannot pass the limit
     const [{ n }] = await q<{ n: number }>(
       "select count(*)::int n from login_codes where email = $1 and created_at > now() - interval '15 minutes'", [email]);
-    if (n >= 5) throw new Error("Too many codes requested. Wait a few minutes and try again.");
+    if (n >= 5) throw new AuthError("Too many codes requested. Wait a few minutes and try again.");
     await q("insert into login_codes(email, code_hash, expires_at) values ($1, $2, now() + make_interval(mins => $3))",
       [email, sha256(`${email}:${code}`), CODE_TTL_MIN]);
   });
@@ -30,9 +39,9 @@ export async function requestCode(email: string): Promise<{ code?: string; deliv
       from: process.env.SMTP_FROM, to: email, subject: "Your azentio.ai sign-in code",
       text: `Your sign-in code is ${code}. It expires in ${CODE_TTL_MIN} minutes and works once.`,
     });
-    return { delivered: true, code: demoMode() ? code : undefined };
+    return { delivered: true, code: demoEcho(email) ? code : undefined };
   }
-  return { delivered: false, code: demoMode() ? code : undefined };
+  return { delivered: false, code: demoEcho(email) ? code : undefined };
 }
 
 /** Verifies the code, creates the user record on first sign-in, and starts a session. */
@@ -59,8 +68,8 @@ export async function verifyCode(email: string, code: string): Promise<void> {
     await q("insert into audit_events(actor_id, action, entity, entity_id) values ($1::uuid, 'auth.signed_in', 'user', $1::text)", [u.id]);
     return "ok" as const;
   });
-  if (outcome === "expired") throw new Error("The code has expired. Request a new one.");
-  if (outcome === "wrong") throw new Error("That code is not correct.");
+  if (outcome === "expired") throw new AuthError("The code has expired. Request a new one.");
+  if (outcome === "wrong") throw new AuthError("That code is not correct.");
   (await cookies()).set(COOKIE, raw, {
     httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: SESSION_DAYS * 86400,
   });
@@ -79,7 +88,7 @@ export async function setActiveOrg(userId: string, orgId: string) {
   if (!raw) return;
   await system(async (q) => {
     const ok = await q("select 1 from memberships where user_id = $1 and org_id = $2 and status = 'active'", [userId, orgId]);
-    if (!ok.length) throw new Error("You are not a member of that organisation.");
+    if (!ok.length) throw new AuthError("You are not a member of that organisation.");
     await q("update sessions set active_org_id = $1 where token_hash = $2 and user_id = $3", [orgId, sha256(raw), userId]);
   });
 }

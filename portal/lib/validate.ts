@@ -33,3 +33,14 @@ export const uuid = (v: unknown) => {
   return s;
 };
 const label = (n: string) => n.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase());
+
+/** Only same-site paths survive; "/\\evil.com", "//evil.com" and tab tricks resolve off-site and are dropped. */
+export function safeNext(next: string): string | null {
+  if (!next.startsWith("/")) return null;
+  try {
+    const u = new URL(next, "http://local.invalid");
+    return u.origin === "http://local.invalid" ? u.pathname + u.search : null;
+  } catch {
+    return null;
+  }
+}
